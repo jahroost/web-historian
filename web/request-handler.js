@@ -20,6 +20,7 @@ exports.handleRequest = function (req, res) {
 
   if (req.method === 'POST') {
    headers['Content-Type'] = 'text/plain';
+   console.log("REQUEST URL: ", req.url);
    var body = '';
    res.writeHead(201, headers);
    req.on('data', function(chunk) {
@@ -33,16 +34,30 @@ exports.handleRequest = function (req, res) {
   }
 
   else if (req.method === 'GET') {
-     fs.readFile(archive.paths.siteAssets + '/index.html', function(err, data) {
-      //  headers['Content-Type'] = 'application/JSON';
-       res.writeHead(200, {'Content-Type': 'text/html'});
-      //  res.write();
-      console.log('DATA: ',data.toString());
+    console.log('REQUEST URL',req.url);
+    if ( req.url === '/') {
+      fs.readFile(archive.paths.siteAssets + '/index.html', function(err, data) {
+        console.log('GET DATA: ',data);
+       //  headers['Content-Type'] = 'application/JSON';
+        res.writeHead(200, {'Content-Type': 'text/html'});
+       //  res.write();
+       if( err ) {
+         console.log('ERROR: ', err);
+       }
+        res.end(data);
+      });
+    } else if ( req.url.includes(archive.paths.archivedSites)) {
+      fs.readFile(archive.paths.archivedSites + req.url, function(err, data) {
+      console.log('GET DATA: ',data);
+      res.writeHead(200, {'Content-Type': 'text/html'});
       if( err ) {
         console.log('ERROR: ', err);
       }
-       res.end(data);
-     });
+      res.end(data);
+      });
+    } else {
+      res.writeHead(404, {'Content-Type': 'text/html'});
+    }
   }
 
   else if (req.method === 'OPTIONS') {

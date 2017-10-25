@@ -54,12 +54,14 @@ exports.isUrlArchived = function(url, callback) {
 
 exports.downloadUrls = function(urls) {
 
-  var file = this.paths.archivedSites;
+  var file = this.paths.archivedSites + '/';
+  console.log('FILE HEADER: ',file);
   urls.forEach( function ( url ) {
     console.log('DOWNLOAD URL: ', url);
     url = 'http://' + url;
-    file = file + url.slice(7);
-    request(url).pipe(fs.createWriteStream(file));
+    filePath = file + url.slice(7);
+    console.log('FILE PATH: ',filePath);
+    request(url).pipe(fs.createWriteStream(filePath));
   })
   // urls.forEach( function(url) {
   //   url = 'http://' + url;
