@@ -28,7 +28,6 @@ exports.initialize = function(pathsObj) {
 // modularize your code. Keep it clean!
 
 exports.readListOfUrls = function(callback) {
-  var urls = ''
   console.log('got to readListOfUrls');
   fs.readFile(this.paths.list, function(err, data) {
     data = data.toString();
@@ -48,7 +47,7 @@ exports.isUrlInList = function(url, callback) {
 };
 
 exports.addUrlToList = function(url, callback) {
-  fs.appendFile(this.paths.list, '\n' + url, function (err) {
+  fs.appendFile(this.paths.list, url, function (err) {
     if (err) throw err;
     console.log('Updated!');
   });
@@ -56,7 +55,7 @@ exports.addUrlToList = function(url, callback) {
 };
 
 exports.isUrlArchived = function(url, callback) {
-  
+
 };
 
 exports.downloadUrls = function(urls) {
