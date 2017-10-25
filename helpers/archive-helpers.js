@@ -8,6 +8,8 @@ var _ = require('underscore');
  * if you move any files, you'll only need to change your code in one place! Feel free to
  * customize it in any way you wish.
  */
+ //not sure if we should be instantiating dirname here
+var __dirname = '/Users/student/Documents/hratx30-web-historian'
 
 exports.paths = {
   siteAssets: path.join(__dirname, '../web/public'),
