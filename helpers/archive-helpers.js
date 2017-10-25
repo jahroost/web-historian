@@ -1,6 +1,7 @@
 var fs = require('fs');
 var path = require('path');
 var _ = require('underscore');
+var request = require('request');
 var http = require('http');
 
 /*
@@ -9,8 +10,6 @@ var http = require('http');
  * if you move any files, you'll only need to change your code in one place! Feel free to
  * customize it in any way you wish.
  */
- //not sure if we should be instantiating dirname here
-
 exports.paths = {
   siteAssets: path.join(__dirname, '../web/public'),
   archivedSites: path.join(__dirname, '../archives/sites'),
@@ -24,15 +23,10 @@ exports.initialize = function(pathsObj) {
   });
 };
 
-// The following function names are provided to you to suggest how you might
-// modularize your code. Keep it clean!
-
 exports.readListOfUrls = function(callback) {
-  console.log('got to readListOfUrls');
   fs.readFile(this.paths.list, function(err, data) {
     data = data.toString();
     data = data.split('\n')
-    console.log('url DATA: ',data);
     callback(data);
   });
 };
@@ -41,7 +35,6 @@ exports.isUrlInList = function(url, callback) {
   fs.readFile(this.paths.list, function(err, data) {
     data = data.toString();
     data = data.split('\n')
-    console.log('url DATA: ',data);
     callback(data.includes(url));
   });
 };
@@ -49,14 +42,35 @@ exports.isUrlInList = function(url, callback) {
 exports.addUrlToList = function(url, callback) {
   fs.appendFile(this.paths.list, url, function (err) {
     if (err) throw err;
-    console.log('Updated!');
   });
   callback();
 };
 
 exports.isUrlArchived = function(url, callback) {
-
+  fs.readdir(this.paths.archivedSites, function ( err, files ) {
+    callback(files.includes(url));
+  });
 };
 
 exports.downloadUrls = function(urls) {
+
+  var file = this.paths.archivedSites;
+  urls.forEach( function ( url ) {
+    console.log('DOWNLOAD URL: ', url);
+    url = 'http://' + url;
+    file = file + url.slice(7);
+    request(url).pipe(fs.createWriteStream(file));
+  })
+  // urls.forEach( function(url) {
+  //   url = 'http://' + url;
+  //   request(url, function (error, response, body) {
+  //     console.log('URL download:', url); // Print the error if one occurred
+  //     console.log('DOWNLOAD body:', body); // Print the HTML for the Google homepage.
+  //     var file = this.paths.archivedSites + url.slice(7);
+  //     console.log('FILE PATH = ', file);
+  //     fs.writeFile(file, body, function(err) {
+  //       console.log('Download URL writeFile error');
+  //     });
+  //   });
+  // });
 };
