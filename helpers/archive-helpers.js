@@ -9,7 +9,6 @@ var _ = require('underscore');
  * customize it in any way you wish.
  */
  //not sure if we should be instantiating dirname here
-var __dirname = '/Users/student/Documents/hratx30-web-historian'
 
 exports.paths = {
   siteAssets: path.join(__dirname, '../web/public'),

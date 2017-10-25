@@ -33,10 +33,16 @@ exports.handleRequest = function (req, res) {
   }
 
   else if (req.method === 'GET') {
-     headers['Content-Type'] = 'application/JSON';
-     res.writeHead(200, headers);
-     console.log('sending results', results)
-     res.end(JSON.stringify({results}));
+     fs.readFile(archive.paths.siteAssets + '/index.html', function(err, data) {
+      //  headers['Content-Type'] = 'application/JSON';
+       res.writeHead(200, {'Content-Type': 'text/html'});
+      //  res.write();
+      console.log('DATA: ',data.toString());
+      if( err ) {
+        console.log('ERROR: ', err);
+      }
+       res.end(data);
+     });
   }
 
   else if (req.method === 'OPTIONS') {
