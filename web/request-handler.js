@@ -21,47 +21,59 @@ exports.handleRequest = function (req, res) {
 
 
   if (req.method === 'POST') {
-   headers['Content-Type'] = 'text/plain';
-   console.log("REQUEST URL: ", req.url);
-   var body = '';
-   res.writeHead(201, headers);
-   req.on('data', function(chunk) {
-     body += chunk;
-   });
-   req.on('end', function() {
-     //TODO add to results && end res
-     results.push(qs.parse(body));
-     res.end(JSON.stringify({results}));
-   });
-  }
+    console.log("REQUEST URL: ", req.url);
+
+    req.on('data', function(chunk) {
+
+     console.log('REQUESTED SITES: ', chunk.toString());
+     archive.isUrlInList(req.url, function (exists) {
+       console.log('EXISTS: ', exists)
+       if (!exists) {
+         console.log('IN addUrlToList')
+         var site = chunk.slice(4);
+         fs.appendFile(archive.paths.list, site, function (err) {
+           if (err) throw err;
+         });
+       } else {
+         // redirect to loading or archived version of page
+       }
+     });
+
+    });
+    res.writeHead(302, httpHelpers.headers);
+    res.end('<!DOCTYPE html><html><head><link rel="stylesheet" type="text/css" href="styles.css" /></head><body><form method="POST"><input type="input" name="url"></input></form>Our robots are currently archiving the site you requested. Please check back soon for a freshly embalmed copy!</body></html>');
+    }
 
   else if (req.method === 'GET') {
+
     if ( req.url === '/') {
       fs.readFile(archive.paths.siteAssets + '/index.html', function(err, data) {
-        console.log('GET DATA: ',data);
         res.writeHead(200, httpHelpers.headers);
-        if( err ) {
-          console.log('ERROR: ', err);
-        }
+        if( err ) {console.log('ERROR: ', err);}
         res.end(data);
       });
-    } else {
+    }
+
+
+    else {
       fs.readFile(archive.paths.siteAssets + req.url, function(err, data) {
-        if( err ) {
+         if( err ) {
           fs.readFile(archive.paths.archivedSites + req.url, function(err, data) {
-            console.log('GET DATA ARCHIVE: ',data);
             res.writeHead(200, httpHelpers.headers);
+
             if ( err ) {
               console.log('ARCHIVE ERROR');
+              res.writeHead(404, httpHelpers.headers);
               res.end();
+            } else{
+              res.end(JSON.stringify(data));
             }
-            res.end(data.toString());
           });
-        } else{
-          console.log('GET DATA SITE REQUESTS: ',data);
-          res.writeHead(200, httpHelpers.headers);
-          res.end(data); 
         }
+         //   console.log('GET DATA SITE REQUESTS: ',data);
+         res.writeHead(200, httpHelpers.headers);
+         res.end(JSON.stringify(data));
+        // }
       });
     }
   }

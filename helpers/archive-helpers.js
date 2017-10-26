@@ -40,7 +40,11 @@ exports.isUrlInList = function(url, callback) {
 };
 
 exports.addUrlToList = function(url, callback) {
-  fs.appendFile(this.paths.list, url, function (err) {
+  // if ( !url.includes('\n') ) {
+  //   url = url + '\n';
+  // }
+  var file = url + '\n'
+  fs.appendFile(this.paths.list, file, function (err) {
     if (err) throw err;
   });
   callback();
