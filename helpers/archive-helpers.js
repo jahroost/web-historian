@@ -48,6 +48,7 @@ exports.addUrlToList = function(url, callback) {
 
 exports.isUrlArchived = function(url, callback) {
   fs.readdir(this.paths.archivedSites, function ( err, files ) {
+    console.log('FILES: ', files);
     callback(files.includes(url));
   });
 };
@@ -55,12 +56,9 @@ exports.isUrlArchived = function(url, callback) {
 exports.downloadUrls = function(urls) {
 
   var file = this.paths.archivedSites + '/';
-  console.log('FILE HEADER: ',file);
   urls.forEach( function ( url ) {
-    console.log('DOWNLOAD URL: ', url);
     url = 'http://' + url;
     filePath = file + url.slice(7);
-    console.log('FILE PATH: ',filePath);
     request(url).pipe(fs.createWriteStream(filePath));
   })
   // urls.forEach( function(url) {
